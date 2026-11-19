@@ -1,7 +1,9 @@
 # Name,   Type, SubType, Offset,   Size
-# Two 3 MB app slots so firmware can be updated over WiFi (OTA).
+# Layout chosen so this project can share a KC868-A2v3 with another
+# firmware: it only uses flash areas the other firmware leaves free
+# (0x9000-0x10FFF and 0x840000-0xE3FFFF). 0x11000-0x83FFFF and
+# 0xF60000-0xFFFFFF (keys/certificates) are never touched.
 nvs,      data, nvs,     0x9000,   0x6000
 otadata,  data, ota,     0xf000,   0x2000
-phy_init, data, phy,     0x11000,  0x1000
-ota_0,    app,  ota_0,   0x20000,  0x300000
-ota_1,    app,  ota_1,   0x320000, 0x300000
+ota_0,    app,  ota_0,   0x840000, 0x300000
+ota_1,    app,  ota_1,   0xB40000, 0x300000
