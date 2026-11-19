@@ -4,7 +4,8 @@ Firmware for an ESP32-S3 relay board (KinCony KC868-A2v3), written in **C++ on E
 The board hosts its own web dashboard and REST API, runs daily timers, reacts to physical inputs,
 reports to an MQTT broker and updates itself over WiFi with automatic rollback.
 
-![Dashboard](docs/dashboard.png)
+![Dashboard](docs/dashboard(1).png)
+![Dashboard](docs/dashboard(2).png)
 
 ## Features
 
