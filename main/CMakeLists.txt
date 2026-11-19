@@ -1,2 +1,2 @@
-idf_component_register(SRCS "main.cpp" "wifi.cpp" "time_sync.cpp"
+idf_component_register(SRCS "main.cpp" "wifi.cpp" "time_sync.cpp" "oled.cpp"
                        INCLUDE_DIRS ".")

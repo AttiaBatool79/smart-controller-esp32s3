@@ -23,14 +23,18 @@ bool TimeIsValid() {
     return t.tm_year + 1900 >= 2024;
 }
 
-std::string TimeNow() {
-    if (!TimeIsValid()) return "time not set";
+std::string Format(const char* fmt) {
+    if (!TimeIsValid()) return "--";
     time_t now = time(nullptr);
     tm t{};
     localtime_r(&now, &t);
     char buf[32];
-    strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &t);
+    strftime(buf, sizeof(buf), fmt, &t);
     return buf;
+}
+
+std::string TimeNow() {
+    return TimeIsValid() ? Format("%Y-%m-%d %H:%M:%S") : "time not set";
 }
 
 }  // namespace clk
