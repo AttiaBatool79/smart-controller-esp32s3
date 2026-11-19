@@ -3,17 +3,18 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "config.hpp"
 #include "esp_log.h"
 #include "esp_netif_sntp.h"
 
 namespace clk {
 
 void TimeSyncStart() {
-    setenv("TZ", "PKT-5", 1);  // Pakistan time = UTC+5
+    setenv("TZ", cfg::kTimezone, 1);
     tzset();
-    esp_sntp_config_t cfg = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
+    esp_sntp_config_t cfg = ESP_NETIF_SNTP_DEFAULT_CONFIG(cfg::kNtpServer);
     esp_netif_sntp_init(&cfg);
-    ESP_LOGI("time", "NTP sync started (pool.ntp.org)");
+    ESP_LOGI("time", "NTP sync started (%s)", cfg::kNtpServer);
 }
 
 bool TimeIsValid() {
