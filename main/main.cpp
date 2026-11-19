@@ -9,9 +9,11 @@
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "io.hpp"
 #include "oled.hpp"
 #include "secrets.h"
 #include "time_sync.hpp"
+#include "web.hpp"
 #include "wifi.hpp"
 
 static const char* TAG = "smart";
@@ -28,7 +30,7 @@ static void PrintBoardInfo() {
     uint8_t mac[6];
     esp_read_mac(mac, ESP_MAC_WIFI_STA);
 
-    ESP_LOGI(TAG, "=== Smart Controller v0.3 ===");
+    ESP_LOGI(TAG, "=== Smart Controller v0.4 ===");
     ESP_LOGI(TAG, "Chip: ESP32-S3, %d cores, rev v%d.%d", chip.cores,
              chip.revision / 100, chip.revision % 100);
     ESP_LOGI(TAG, "Flash: %" PRIu32 " MB", flash_size / (1024 * 1024));
@@ -46,7 +48,9 @@ static void DisplayTask(void*) {
         if (net::WifiIsConnected()) {
             std::snprintf(line, sizeof(line), "IP %s", net::WifiIp().c_str());
             oled::Text(0, 13, line);
-            std::snprintf(line, sizeof(line), "WiFi %d dBm", net::WifiRssi());
+            std::snprintf(line, sizeof(line), "R1:%s R2:%s %ddB",
+                          io::RelayGet(0) ? "ON" : "OFF",
+                          io::RelayGet(1) ? "ON" : "OFF", net::WifiRssi());
             oled::Text(0, 26, line);
         } else {
             oled::Text(0, 13, "WiFi connecting...");
@@ -61,6 +65,7 @@ static void DisplayTask(void*) {
 
 extern "C" void app_main(void) {
     PrintBoardInfo();
+    io::Init();
 
     if (oled::Init(kI2cSda, kI2cScl)) {
         oled::Text(0, 0, "Smart Controller");
@@ -71,6 +76,7 @@ extern "C" void app_main(void) {
 
     net::WifiStart(WIFI_SSID, WIFI_PASS);
     clk::TimeSyncStart();
+    web::Start();  // dashboard: open http://<board-ip>/ in a browser
 
     while (true) {
         int64_t uptime_s = esp_timer_get_time() / 1000000;
